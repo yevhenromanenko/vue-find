@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Find",
+  "description": "Comfortable working on the site",
+  "version": "1.0.0",
+  "author": "Yevhen",
+  "icons": {
+    "16": "./favicon16.png",
+    "48": "./favicon48.png",
+    "128": "./favicon128.png"
+  },
+  "browser_action": {},
+  "background": {
+    "persistent": false,
+    "scripts": ["./background.js"]
+  },
+  "content_scripts": [{
+    "matches": ["https://*.findbride.com/*", "http://*.findbride.com/*"],
+    "run_at": "document_end",
+    "js": ["/assets/index.js"],
+    "css": ["/assets/index.css"]
+  }],
+  "permissions": ["activeTab", "tabs", "contextMenus"]
+}
