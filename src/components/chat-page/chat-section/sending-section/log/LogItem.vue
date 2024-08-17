@@ -7,7 +7,8 @@ export default {
     profileLink: String,
     srcPhoto: String,
     text: String,
-  }
+  },
+  inject: ["theme"]
 }
 
 </script>
@@ -18,18 +19,20 @@ export default {
       <img :src="srcPhoto" class="ava-in-log" alt="" />
     </div>
     <div class="msg-in-log">
-      <div class="log-text">{{ text }}</div>
-      <div class="invite-info-in-log">
+      <div
+          class="log-text"
+          :style="{ color: theme.global.name === 'dark' ? '#ececf1' : '#2c3e50' }"
+      >{{ text }}</div>
+      <div
+          class="invite-info-in-log"
+          :style="{ color: theme.global.name === 'dark' ? '#ececf1' : '#2c3e50' }"
+      >
         {{ manName }} -
         <a :href="profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ manId }}</a>
         <span class="country-in-log">{{ manLocation }}</span>
       </div>
     </div>
   </li>
-
-<!--    <li class="log-to-send-item">-->
-<!--    <span class="log-text">Sent {{ text }} to {{ manId }}</span>-->
-<!--  </li>-->
 </template>
 
 <style scoped>

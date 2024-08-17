@@ -4,6 +4,7 @@ import InvitesList from "@/components/invites/InvitesList.vue";
 
 export default {
   components: {InvitesList, InvitesAdd},
+  inject: ["theme"]
 }
 
 </script>
@@ -14,7 +15,14 @@ export default {
     <InvitesAdd/>
   </div>
 
-  <div class="list-item-bottom">
+  <div
+      class="list-item-bottom"
+      :style="{
+        boxShadow: theme.global.name === 'dark'
+        ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+        : '0 2px 8px rgba(0, 0, 0, 0.26)',
+      }"
+  >
     <invites-list></invites-list>
   </div>
 </template>

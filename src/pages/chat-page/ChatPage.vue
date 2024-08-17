@@ -40,11 +40,13 @@ import {reloadPage} from "@/functions/etc/reloadPage.js";
 import {bDayToday} from "@/functions/men/bDayToday.js";
 import {bDayNotification} from "@/functions/notification/bDayNotification.js";
 import {startCountdown} from "@/functions/notification/startCountdown.js";
+import {useTheme} from "vuetify";
 
 export default {
   components: {MsgInArchive, SendingSection, LeftSection },
   provide() {
     return {
+      theme: this.theme,
       usersOnline: this.usersOnline,
       invites: this.invites,
     }
@@ -87,9 +89,15 @@ export default {
       autoStartTimer: null,
       startChat: false,
       countdownText: "до оновлення сторінки 30:00 хв",
+      theme: useTheme(),
     }
   },
   computed: {
+    boxShadowStyle() {
+      return this.theme.global.name === 'dark'
+          ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+          : '0 2px 8px rgba(0, 0, 0, 0.26)';
+    },
     invites() {
       return this.$store.getters.loadedInvites
     },
@@ -181,136 +189,152 @@ export default {
 
 <template>
   <div v-if="!isChatMode" class="chat-app-find">
-    <div class="container-find">
-      <section class="left-section-find">
-        <left-section></left-section>
-      </section>
+    <v-app>
+      <div class="container-find">
+        <section
+            class="left-section-find"
+            :style="{ boxShadow: boxShadowStyle }"
+        >
+          <left-section></left-section>
+        </section>
 
-      <section class="middle-section-find">
-        <sending-section
-            :isSending="isSendingLetters"
-            :textH3="'Розсилка листів зупинена!'"
-            :usersOnline="usersOnline"
-            :startSending="startSendingLetters"
-            :stopSending="stopSendingLetters"
-            :counter="dailyLetterCounter"
-            :errors="errorLetter"
-            :logs="logsLetter"
-            :countForMyUsers="countLettersForMyUsers"
-            :myManSectionIds="myManSectionIds"
-            :showMyManOnline="showMyManOnlineLetters"
-            :toggleMyManOnline="toggleMyManOnlineLetters"
-        ></sending-section>
-      </section>
+        <section
+            class="middle-section-find"
+            :style="{ boxShadow: boxShadowStyle }"
+        >
+          <sending-section
+              :isSending="isSendingLetters"
+              :textH3="'Розсилка листів зупинена!'"
+              :usersOnline="usersOnline"
+              :startSending="startSendingLetters"
+              :stopSending="stopSendingLetters"
+              :counter="dailyLetterCounter"
+              :errors="errorLetter"
+              :logs="logsLetter"
+              :countForMyUsers="countLettersForMyUsers"
+              :myManSectionIds="myManSectionIds"
+              :showMyManOnline="showMyManOnlineLetters"
+              :toggleMyManOnline="toggleMyManOnlineLetters"
+          ></sending-section>
+        </section>
 
-      <section class="right-section-find">
-        <sending-section
-            :isSending="isSendingInvites"
-            :textH3="'Розсилка інвайтів зупинена!'"
-            :usersOnline="usersOnline"
-            :startSending="startSendingInvites"
-            :stopSending="stopSendingInvites"
-            :counter="dailyInviteCounter"
-            :errors="errorInvite"
-            :logs="logsInvite"
-            :countForMyUsers="countInvitesForMyUsers"
-            :myManSectionIds="myManSectionIds"
-            :showMyManOnline="showMyManOnlineInvites"
-            :toggleMyManOnline="toggleMyManOnlineInvites"
-        ></sending-section>
-      </section>
+        <section
+            class="right-section-find"
+            :style="{ boxShadow: boxShadowStyle }"
+        >
+          <sending-section
+              :isSending="isSendingInvites"
+              :textH3="'Розсилка інвайтів зупинена!'"
+              :usersOnline="usersOnline"
+              :startSending="startSendingInvites"
+              :stopSending="stopSendingInvites"
+              :counter="dailyInviteCounter"
+              :errors="errorInvite"
+              :logs="logsInvite"
+              :countForMyUsers="countInvitesForMyUsers"
+              :myManSectionIds="myManSectionIds"
+              :showMyManOnline="showMyManOnlineInvites"
+              :toggleMyManOnline="toggleMyManOnlineInvites"
+          ></sending-section>
+        </section>
 
-      <section class="bottom-center">
-        <div v-if="showArchive" class="id-list">
-          <msg-in-archive
-              :msgToArchive="msgToArchive"
-              :removeMsgFromArchive="removeMsgFromArchive"
-          ></msg-in-archive>
-        </div>
-        <div class="button-container" v-if="!showMyManOnlineLetters">
-          <base-button class="middle-btn" @click="toggleChatMode">
-            Перейти в чат
-            <span v-if="msgLength" class="unread-count">{{ msgLength }}</span>
+        <section class="bottom-center">
+          <div v-if="showArchive" class="id-list">
+            <msg-in-archive
+                :msgToArchive="msgToArchive"
+                :removeMsgFromArchive="removeMsgFromArchive"
+            ></msg-in-archive>
+          </div>
+          <div class="button-container" v-if="!showMyManOnlineLetters">
+            <base-button class="middle-btn" @click="toggleChatMode">
+              Перейти в чат
+              <span v-if="msgLength" class="unread-count">{{ msgLength }}</span>
+            </base-button>
+
+            <base-button class="middle-btn-archive" @click="showArchiveFunc">
+              {{ showArchive ? 'Архів чатів ⬇' : 'Архів чатів ⬆' }}
+            </base-button>
+          </div>
+        </section>
+
+        <section class="right-bottom-center" v-if="!showMyManOnlineInvites">
+          <div class="countdown-text">{{ countdownText }}</div>
+        </section>
+     </div>
+
+      <section class="input-section">
+        <div
+            :class="['left-section-my-man', { 'green-border': isBirthdaySoon }, {'section-box-shadow-light': this.theme.global.name === 'dark'} ]"
+        >
+          <input class="input-find-my-man" v-model.trim="newMyManId" placeholder="Напишіть ID постояльця">
+          <base-button style="padding: 2% 3%" @click="() => {
+            addMyManId(myManSectionIds, newMyManId)
+            this.newMyManId = ''
+          }">
+            Додати
+          </base-button>
+          <base-button style="padding: 1.6% 3%" @click="toggleShowMyManIds">
+            {{ showMyManIds ? 'Сховати ⬆' : 'Постояльці ⬇' }}
           </base-button>
 
-          <base-button class="middle-btn-archive" @click="showArchiveFunc">
-            {{ showArchive ? 'Архів чатів ⬇' : 'Архів чатів ⬆' }}
+          <div v-if="showMyManIds" class="id-list">
+            <div v-if="myManSectionIds.length > 0">
+              <div class="id-user-ban-my-man" v-for="(man, index) in myManSectionIds" :key="index">
+                <div class="img-in-log">
+                  <img :src="man.srcPhoto" class="ava-in-log" alt="" />
+                </div>
+                <div class="invite-info-in-log">
+                  {{ man.manName }} -
+                  <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
+                  <span class="country-in-log">{{ man.manLocation }}</span>
+                </div>
+                <div class="btn-container">
+                  <button class="b-day-user-btn" @click="openProfile(man.manId)">{{man.daysBefore}} днів до ДР</button>
+                  <button class="delete-user-btn" @click="removeMyManId(myManSectionIds, man.manId, index)">x</button>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <span style="color: #ececf1">Поки нема доданих ID!</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div
+            class="right-section-my-man"
+            :class="{'section-box-shadow-light': this.theme.global.name === 'dark'}"
+        >
+          <base-button style="padding: 1.6% 3%" @click="toggleShowBanIds">
+            {{ showBanIds ? 'Сховати ⬆' : 'Бан лист ⬇' }}
           </base-button>
-        </div>
-      </section>
+          <base-button style="padding: 2% 3%" @click="addBanId">Додати</base-button>
+          <input class="input-find-my-man" v-model.trim="newBanId" placeholder="ID користувача для блокування">
 
-      <section class="right-bottom-center" v-if="!showMyManOnlineInvites">
-        <div class="countdown-text">{{ countdownText }}</div>
-      </section>
-    </div>
-
-    <section class="input-section">
-      <div :class="['left-section-my-man', { 'green-border': isBirthdaySoon }]">
-        <input class="input-find-my-man" v-model.trim="newMyManId" placeholder="Напишіть ID постояльця">
-        <base-button style="padding: 2% 3%" @click="() => {
-          addMyManId(myManSectionIds, newMyManId)
-          this.newMyManId = ''
-        }">
-          Додати
-        </base-button>
-        <base-button style="padding: 1.6% 3%" @click="toggleShowMyManIds">
-          {{ showMyManIds ? 'Сховати ⬆' : 'Постояльці ⬇' }}
-        </base-button>
-
-        <div v-if="showMyManIds" class="id-list">
-          <div v-if="myManSectionIds.length > 0">
-            <div class="id-user-ban-my-man" v-for="(man, index) in myManSectionIds" :key="index">
-              <div class="img-in-log">
-                <img :src="man.srcPhoto" class="ava-in-log" alt="" />
-              </div>
-              <div class="invite-info-in-log">
-                {{ man.manName }} -
-                <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
-                <span class="country-in-log">{{ man.manLocation }}</span>
-              </div>
-              <div class="btn-container">
-                <button class="b-day-user-btn" @click="openProfile(man.manId)">{{man.daysBefore}} днів до ДР</button>
-                <button class="delete-user-btn" @click="removeMyManId(myManSectionIds, man.manId, index)">x</button>
+          <div v-if="showBanIds" class="id-list">
+            <div v-if="banSectionIds.length > 0">
+              <div class="id-user-ban-my-man" v-for="(man, index) in banSectionIds" :key="index">
+                <div class="img-in-log">
+                  <img :src="man.srcPhoto" class="ava-in-log" alt="" />
+                </div>
+                <div class="invite-info-in-log">
+                  {{ man.manName }} -
+                  <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
+                  <span class="country-in-log">{{ man.manLocation }}</span>
+                </div>
+                <div class="btn-container">
+                  <button class="b-day-user-btn" @click="openProfile(man.manId)">{{man.daysBefore}} днів до ДР</button>
+                  <button class="delete-user-btn" @click="removeBanId(banSectionIds, man.manId, index)">x</button>
+                </div>
               </div>
             </div>
-          </div>
-          <div v-else>
-            <span style="color: #ececf1">Поки нема доданих ID!</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="right-section-my-man">
-        <base-button style="padding: 1.6% 3%" @click="toggleShowBanIds">
-          {{ showBanIds ? 'Сховати ⬆' : 'Бан лист ⬇' }}
-        </base-button>
-        <base-button style="padding: 2% 3%" @click="addBanId">Додати</base-button>
-        <input class="input-find-my-man" v-model.trim="newBanId" placeholder="ID користувача для блокування">
-
-        <div v-if="showBanIds" class="id-list">
-          <div v-if="banSectionIds.length > 0">
-            <div class="id-user-ban-my-man" v-for="(man, index) in banSectionIds" :key="index">
-              <div class="img-in-log">
-                <img :src="man.srcPhoto" class="ava-in-log" alt="" />
-              </div>
-              <div class="invite-info-in-log">
-                {{ man.manName }} -
-                <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
-                <span class="country-in-log">{{ man.manLocation }}</span>
-              </div>
-              <div class="btn-container">
-                <button class="b-day-user-btn" @click="openProfile(man.manId)">{{man.daysBefore}} днів до ДР</button>
-                <button class="delete-user-btn" @click="removeBanId(banSectionIds, man.manId, index)">x</button>
-              </div>
+            <div v-else>
+              <span style="color: #ececf1">Поки нема доданих ID!</span>
             </div>
           </div>
-          <div v-else>
-            <span style="color: #ececf1">Поки нема доданих ID!</span>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </v-app>
   </div>
 
   <div v-else>
@@ -360,6 +384,10 @@ export default {
   width: 50%;
   padding: 1rem;
   border-radius: 12px;
+}
+
+.section-box-shadow-light {
+  box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.3);
 }
 
 .input-find-my-man {
@@ -599,6 +627,12 @@ export default {
 
   .b-day-user-btn {
     display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .invite-info-in-log {
+    color: #202123;
   }
 }
 

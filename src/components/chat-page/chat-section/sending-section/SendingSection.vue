@@ -4,6 +4,7 @@ import Log from "@/components/chat-page/chat-section/sending-section/log/Log.vue
 export default {
   components: { Log },
   props: ['isSending', 'textH3', 'usersOnline', 'startSending', 'stopSending', 'counter', 'errors', 'logs', 'countForMyUsers', 'myManSectionIds', 'showMyManOnline', 'toggleMyManOnline'],
+  inject: ["theme"],
   data() {
     return {
       myManOnline: [],
@@ -24,49 +25,63 @@ export default {
 </script>
 
 <template>
-  <div v-if="!isSending">
-    <h3>{{textH3}}</h3>
-    <base-button @click="startSending">Почати розсилку</base-button>
-  </div>
-  <div v-else>
-    <h3>
-      Онлайн: {{ usersOnline && usersOnline.length > 0 ? usersOnline.length : '0' }} чоловіків,
-      постояльці:
-      <button class="man-online" @click="toggleMyManOnline">
-        {{ myManOnline && myManOnline.length > 0 ? myManOnline.length : '0' }}
-      </button>
-    </h3>
-    <base-button @click="stopSending">Зупинити розсилку</base-button>
-  </div>
-  <div class="log-list-item-bottom">
-    <log :logs="logs"></log>
-  </div>
-  <p>Наліслано сьогодні: {{ counter }}, постояльцям: {{ countForMyUsers }}, помилки: {{ errors }}</p>
+    <div v-if="!isSending">
+      <h3>{{textH3}}</h3>
+      <base-button @click="startSending">Почати розсилку</base-button>
+    </div>
+    <div v-else>
+      <h3>
+        Онлайн: {{ usersOnline && usersOnline.length > 0 ? usersOnline.length : '0' }} чоловіків,
+        постояльці:
+        <button class="man-online" @click="toggleMyManOnline">
+          {{ myManOnline && myManOnline.length > 0 ? myManOnline.length : '0' }}
+        </button>
+      </h3>
+      <base-button @click="stopSending">Зупинити розсилку</base-button>
+    </div>
+    <div
+        class="log-list-item-bottom"
+        :style="{
+          boxShadow: theme.global.name === 'dark'
+          ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+          : '0 2px 8px rgba(0, 0, 0, 0.26)',
+        }"
+    >
+      <log :logs="logs"></log>
+    </div>
+    <p>Наліслано сьогодні: {{ counter }}, постояльцям: {{ countForMyUsers }}, помилки: {{ errors }}</p>
 
-  <div v-if="showMyManOnline">
-    <div v-if="myManOnline.length > 0">
-      <h4>Постояльці онлайн:</h4>
-      <div class="id-list">
-        <div class="id-user-ban-my-man" v-for="man in myManOnline" :key="man.manId">
-          <div class="img-in-log">
-            <img :src="man.srcPhoto" class="ava-in-log" alt="" />
-          </div>
-          <div class="invite-info-in-log">
-            {{ man.manName }} -
-            <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
+    <div v-if="showMyManOnline">
+      <div v-if="myManOnline.length > 0">
+        <h4>Постояльці онлайн:</h4>
+        <div class="id-list">
+          <div
+              class="id-user-ban-my-man"
+              v-for="man in myManOnline" :key="man.manId"
+          >
+            <div class="img-in-log">
+              <img :src="man.srcPhoto" class="ava-in-log" alt="" />
+            </div>
+            <div
+                :class="[ theme.global.name === 'dark' ? 'invite-info-in-log' : 'invite-info-in-log-light-theme']"
+            >
+              {{ man.manName }} -
+              <a :href="man.profileLink" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ man.manId }}</a>
+            </div>
           </div>
         </div>
       </div>
+      <div v-else>
+        <h4>Всі постояльці офлайн зараз!</h4>
+      </div>
     </div>
-    <div v-else>
-      <h4>Всі постояльці офлайн зараз!</h4>
-    </div>
-  </div>
-
-
 </template>
 
 <style scoped>
+.section-box-shadow-light {
+  box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.3);
+}
+
 .img-in-log {
   margin-right: 10px;
 }
@@ -89,14 +104,24 @@ export default {
 .invite-info-in-log span {
   cursor: pointer;
   border-bottom: 1px dashed #000;
+  color: #ececf1;
 }
 
 .invite-info-in-log span:hover {
   color: #000;
 }
 
+.invite-info-in-log-light-theme span {
+  cursor: pointer;
+  border-bottom: 1px dashed #ececf1;
+  color: #2c3e50;
+}
+
+.invite-info-in-log-light-theme span:hover {
+  color: #ececf1;
+}
+
 .id-user-ban-my-man {
-  background-color: #ececf1;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -129,4 +154,5 @@ export default {
   }
 
 }
+
 </style>

@@ -3,6 +3,7 @@ import MassLetterLeftSection from "@/components/mass-letter/MassLetterLeftSectio
 import MassLetterRightSection from "@/components/mass-letter/MassLetterRightSection.vue";
 import startSendMassLetter from "@/functions/mass-letter/startSendMassLetter.js";
 import {stopSendingMassLetters} from "@/functions/mass-letter/stopSendingMassLetter.js";
+import {useTheme} from "vuetify";
 
 export default {
   components: {MassLetterRightSection, MassLetterLeftSection},
@@ -14,6 +15,7 @@ export default {
   },
   data() {
     return {
+      theme: useTheme(),
       massLetterCounter: 0,
       massLetterErrorCounter: 0,
       logsMassLetter: [],
@@ -47,7 +49,12 @@ export default {
   computed: {
     ladyId() {
       return this.$store.getters.loadedLadyId;
-    }
+    },
+    boxShadowStyle() {
+      return this.theme.global.name === 'dark'
+          ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+          : '0 2px 8px rgba(0, 0, 0, 0.26)';
+    },
   },
   methods: {
     stopSendingMassLetters,
@@ -57,45 +64,53 @@ export default {
 </script>
 
 <template>
-  <div class="bottom-center">
-    <div v-if="!isSendingMassLetters">
-      <base-button @click="startSendMassLetter(this)" class="start-button">Почати</base-button>
-    </div>
-    <div v-else>
-      <base-button @click="stopSendingMassLetters" class="stop-button">Зупинити розсилку</base-button>
-    </div>
-  </div>
+  <div class="mass-letter-page">
 
 
-  <div class="chat-app-find-mass-letter">
-    <div class="container-find-mass-letter">
-      <section class="left-section-mass-letter">
-        <mass-letter-left-section
-            :subjectMassLetter="subjectMassLetter"
-            :letterMassLetter="letterMassLetter"
-            :photoMassLetter="photoMassLetter"
-            :videoMassLetter="videoMassLetter"
-            :formIsValidMassLetter="formIsValidMassLetter"
-            :photosMassLetter="photosMassLetter"
-            :videosMassLetter="videosMassLetter"
-        ></mass-letter-left-section>
-      </section>
+    <div class="chat-app-find-mass-letter">
+      <v-app>
 
-      <section class="right-section-mass-letter">
-        <mass-letter-right-section
-            :counter="massLetterCounter"
-            :errorCounter="massLetterErrorCounter"
-            :ladyId="ladyId"
-            :isSendingMassLetters="isSendingMassLetters"
-            :logsMass="logsMassLetter"
-        >
-        </mass-letter-right-section>
-      </section>
+        <div v-if="!isSendingMassLetters">
+          <base-button @click="startSendMassLetter(this)" class="start-button">Почати</base-button>
+        </div>
+        <div v-else>
+          <base-button @click="stopSendingMassLetters" class="stop-button">Зупинити розсилку</base-button>
+        </div>
+
+      <div
+          class="container-find-mass-letter"
+      >
+        <section class="left-section-mass-letter" :style="{ boxShadow: boxShadowStyle }">
+          <mass-letter-left-section
+              :subjectMassLetter="subjectMassLetter"
+              :letterMassLetter="letterMassLetter"
+              :photoMassLetter="photoMassLetter"
+              :videoMassLetter="videoMassLetter"
+              :formIsValidMassLetter="formIsValidMassLetter"
+              :photosMassLetter="photosMassLetter"
+              :videosMassLetter="videosMassLetter"
+          ></mass-letter-left-section>
+        </section>
+
+        <section class="right-section-mass-letter" :style="{ boxShadow: boxShadowStyle }">
+          <mass-letter-right-section
+              :counter="massLetterCounter"
+              :errorCounter="massLetterErrorCounter"
+              :ladyId="ladyId"
+              :isSendingMassLetters="isSendingMassLetters"
+              :logsMass="logsMassLetter"
+          >
+          </mass-letter-right-section>
+        </section>
+
+      </div>
+    </v-app>
     </div>
   </div>
 </template>
 
 <style scoped>
+
 .chat-app-find-mass-letter {
   position: fixed;
   height: 100%;
@@ -137,10 +152,19 @@ export default {
 }
 
 .start-button {
-  padding: 25% 35%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 50%;
+  transform: translateX(-50%);
 }
 
 .stop-button {
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 50%;
+  transform: translateX(-50%);
   border: 1px solid #cfcfd1;
   background-color: #ff5c5c;
   color: white;

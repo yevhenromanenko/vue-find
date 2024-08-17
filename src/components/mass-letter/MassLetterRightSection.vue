@@ -1,12 +1,14 @@
 <script>
 import Log from "@/components/chat-page/chat-section/sending-section/log/Log.vue";
 import {getMyMenFromServerMassLetter} from "@/functions/mass-letter/getMyMenFromServerMassLetter.js";
+import {useTheme} from "vuetify";
 
 export default {
   components: {Log},
   props: ['counter', 'errorCounter', 'ladyId', 'isSendingMassLetters', 'logsMass'],
   data() {
     return {
+      theme: useTheme(),
       users: 0
     }
   },
@@ -30,7 +32,13 @@ export default {
   <div v-else>
     <p>Наліслано сьогодні: {{ counter }}/{{users}}, помилки: {{ errorCounter }}</p>
   </div>
-  <div class="log-list-item-bottom">
+  <div class="log-list-item-bottom"
+       :style="{
+              boxShadow: theme.global.name === 'dark'
+              ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+              : '0 2px 8px rgba(0, 0, 0, 0.26)',
+            }"
+  >
     <log :logs="logsMass"></log>
   </div>
 </template>

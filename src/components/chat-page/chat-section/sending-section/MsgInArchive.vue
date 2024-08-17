@@ -3,14 +3,22 @@ import {truncateContent} from "@/functions/notification/newChat/truncateContent.
 
 export default {
   methods: {truncateContent},
-  props: ['msgToArchive', 'removeMsgFromArchive']
+  props: ['msgToArchive', 'removeMsgFromArchive'],
+  inject: ['theme']
 }
 
 </script>
 
 <template>
   <div v-if="msgToArchive.length > 0">
-    <div class="id-user-ban-my-man" v-for="(newChat, index) in msgToArchive" :key="index">
+    <div
+        class="id-user-ban-my-man"
+        :style="{
+                backgroundColor: theme.global.name === 'dark'
+                ? '#2c3e50'
+                : '#ececf1',
+              }"
+        v-for="(newChat, index) in msgToArchive" :key="index">
       <div class="invite-info-in-log">
         <a :href="`https://findbride.com/search/man_profile/all/${newChat.manId}`" target="_blank" rel="noopener noreferrer" class="ded-id-in-log">{{ newChat.manId }}:</a>
         <span :title="newChat.content">{{ truncateContent(newChat.content) }}</span> ({{ newChat.date }})

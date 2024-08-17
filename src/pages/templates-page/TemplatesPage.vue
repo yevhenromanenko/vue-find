@@ -5,12 +5,14 @@ import {loadBdayTemplate} from "@/functions/letters/loadBdayTemplate.js";
 import {loadOnlineTemplate} from "@/functions/letters/loadOnlineTemplate.js";
 import {saveTemplate} from "@/functions/letters/saveTemplate.js";
 import {toggleForm} from "@/functions/letters/toggleForm.js";
+import {useTheme} from "vuetify";
 
 export default {
   name: "TemplatesPage",
   components: {SubjectLetter, TextareaLetter},
   data() {
     return {
+      theme: useTheme(),
       showBdayForm: false,
       showOnlineForm: false,
       bdaySubject: {
@@ -42,7 +44,12 @@ export default {
   computed: {
     ladyId() {
       return this.$store.getters.loadedLadyId;
-    }
+    },
+    boxShadowStyle() {
+      return this.theme.global.name === 'dark'
+          ? '2px 2px 10px rgba(255, 255, 255, 0.3)'
+          : '0 2px 8px rgba(0, 0, 0, 0.26)';
+    },
   },
   methods: {
     toggleForm,
@@ -58,13 +65,14 @@ export default {
 </script>
 
 <template>
-  <div class="form-container-find">
+  <div class="form-container-find" >
+    <v-app>
     <div class="bottom-center">
       <base-button @click="toggleForm('bday')" :class="{'active-button': showBdayForm}" class="start-button">HBday шаблон</base-button>
       <base-button @click="toggleForm('online')" :class="{'active-button': showOnlineForm}" class="start-button">Чоловік онлайн</base-button>
     </div>
 
-    <section class="section-letter"  v-if="showBdayForm || showOnlineForm">
+    <section class="section-letter"  v-if="showBdayForm || showOnlineForm" :style="{ boxShadow: boxShadowStyle }">
       <div v-if="showBdayForm">
         <h3>Напишіть шаблон для чоловіків, у яких сьогодні день нарождення!</h3>
         <subject-letter
@@ -92,7 +100,7 @@ export default {
         <button @click="saveTemplate('online')">Зберегти</button>
       </div>
     </section>
-
+    </v-app>
   </div>
 </template>
 
@@ -106,8 +114,9 @@ export default {
 }
 
 .section-letter {
-  margin-top: 10px;
-  margin-left: 26%;
+  margin-top: 6%;
+  margin-left: 50%;
+  transform: translateX(-50%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   width: 50%;
   padding: 1rem;
@@ -117,7 +126,8 @@ export default {
 .bottom-center {
   position: fixed;
   top: 10%;
-  left: 43%;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   gap: 10px;

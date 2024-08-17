@@ -4,10 +4,26 @@ import router from "@/router.js";
 import BaseButton from "@/UI/base-button/BaseButton.vue";
 import store from "@/store/index.js";
 import BaseSpinner from "@/UI/base-spinner/BaseSpinner.vue";
+import {createVuetify} from "vuetify";
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import * as colors from "vuetify/util/colors";
 
 const bodyForRoot = document.querySelector('body');
 
-// bodyForRoot.style.marginTop = '495px'
+const vuetify = createVuetify({
+    components,
+    directives,
+    icons: {
+        iconfont: 'mdi',
+    },
+    light: {
+        background: colors.indigo.lighten5,
+    },
+    dark: {
+        background: colors.indigo.base,
+    },
+})
 
 const div = document.createElement("div");
 div.id = 'find';
@@ -30,4 +46,4 @@ app.component('base-spinner', BaseSpinner);
 app.use(router);
 app.use(store);
 
-app.mount('#find');
+app.use(vuetify).mount('#find');
